@@ -54,7 +54,7 @@ pub fn tokenize(self: *Self, allocator: *Allocator) ![]Token {
             self.advance();
         },
         '*' => {
-            try result.append(Token.init(.asterix));
+            try result.append(Token.init(.asterisk));
             self.advance();
         },
         '/' => {
