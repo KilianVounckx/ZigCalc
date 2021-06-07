@@ -5,3 +5,4 @@ term        : factor ([ASTERISK | SLASH] factor)*
 factor      : (MINUS)? factor
             | LEFT_PAREN expression RIGHT_PAREN
             | number
+            | ANS

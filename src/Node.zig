@@ -1,6 +1,8 @@
 const std = @import("std");
 const Allocator = std.mem.Allocator;
 
+const calculator = @import("main.zig");
+
 pub const Error = error {
     DivisionByZero,
 };
@@ -12,6 +14,7 @@ const Operation = union(enum) {
     multiplication,
     division,
     negation,
+    ans,
 };
 
 const Self = @This();
@@ -19,6 +22,17 @@ const Self = @This();
 operation: Operation,
 nodes: []Self,
 allocator: *Allocator,
+
+pub fn ans(allocator: *Allocator) !Self {
+    const nodes = try allocator.alloc(Self, 0);
+    errdefer nodes.deinit();
+
+    return Self{
+        .operation = .ans,
+        .nodes = nodes,
+        .allocator = allocator,
+    };
+}
 
 pub fn number(allocator: *Allocator, value: f64) !Self {
     const nodes = try allocator.alloc(Self, 0);
@@ -77,5 +91,6 @@ pub fn interpret(self: Self) anyerror!f64 {
             return (try self.nodes[0].interpret()) / right;
         },
         .negation => return -(try self.nodes[0].interpret()),
+        .ans => return calculator.ans,
     }
 }

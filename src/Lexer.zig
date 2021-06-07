@@ -71,6 +71,7 @@ pub fn tokenize(self: *Self, allocator: *Allocator) ![]Token {
             self.advance();
         },
         '0'...'9' => try result.append(try self.tokenizeNumber(allocator)),
+        'a' => try result.append(try self.tokenizeAns(allocator)),
         else => return Error.InvalidCharacter,
     };
 
@@ -103,4 +104,20 @@ pub fn tokenizeNumber(self: *Self, allocator: *Allocator) !Token {
     }
 
     return Token.number(try std.fmt.parseFloat(f64, number_string.items));
+}
+
+pub fn tokenizeAns(self: *Self, allocator: *Allocator) !Token {
+    self.advance();
+    if (self.current_char) |char| switch (char) {
+        'n' => {},
+        else => return Error.InvalidCharacter,
+    };
+    self.advance();
+    if (self.current_char) |char| switch (char) {
+        's' => {},
+        else => return Error.InvalidCharacter,
+    };
+    self.advance();
+
+    return Token.init(.ans);
 }

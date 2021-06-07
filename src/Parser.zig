@@ -134,6 +134,10 @@ pub fn factor(self: *Self, allocator: *Allocator) anyerror!Node {
             self.advance();
             return Node.number(allocator, token.value.?);
         },
+        .ans => {
+            self.advance();
+            return Node.ans(allocator);
+        },
         else => return Error.ExpectedNumber,
     } else {
         return Error.ExpectedSomething;

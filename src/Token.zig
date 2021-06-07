@@ -8,6 +8,7 @@ const TokenType = enum {
     slash,
     left_paren,
     right_paren,
+    ans,
 
     pub fn format(
         self: TokenType,
@@ -23,6 +24,7 @@ const TokenType = enum {
             .slash => try writer.print("slash", .{}),
             .left_paren => try writer.print("left_paren", .{}),
             .right_paren => try writer.print("right_paren", .{}),
+            .ans => try writer.print("ans", .{}),
         }
     }
 };

@@ -7,6 +7,8 @@ const Lexer = @import("Lexer.zig");
 const Parser = @import("Parser.zig");
 const RuntimeError = @import("Node.zig").Error;
 
+pub var ans: f64 = 0;
+
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     defer _ = gpa.deinit();
@@ -50,6 +52,8 @@ pub fn main() !void {
             },
             else => return err,
         };
+
+        ans = result;
 
         try stdout.print("{d:.8}\n", .{result});
     }
