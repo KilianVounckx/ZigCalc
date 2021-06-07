@@ -3,7 +3,10 @@ const stdout = std.io.getStdOut().writer();
 const stdin = std.io.getStdIn().reader();
 const stderr = std.io.getStdErr().writer();
 
+const Lexer = @import("Lexer.zig");
+
 pub fn main() !void {
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     var buffer: [128]u8 = undefined;
     while (true) {
         try stdout.print("calc> ", .{});
@@ -12,6 +15,15 @@ pub fn main() !void {
             continue;
         }).?;
 
-        try stdout.print("{s}\n", .{line});
+        var lexer = Lexer.init(line);
+        const tokens = lexer.tokenize(&arena.allocator) catch |err| switch (err) {
+            Lexer.Error.InvalidCharacter, Lexer.Error.TooManyPoints, Lexer.Error.UnexpectedPoint => {
+                try stderr.print("Lexer error: {}\n", .{err});
+                continue;
+            },
+            else => return err,
+        };
+
+        std.debug.print("{any}\n", .{tokens});
     }
 }
