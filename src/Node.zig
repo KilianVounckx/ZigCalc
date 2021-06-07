@@ -5,6 +5,7 @@ const calculator = @import("main.zig");
 
 pub const Error = error {
     DivisionByZero,
+    Exit,
 };
 
 const Operation = union(enum) {
@@ -15,6 +16,7 @@ const Operation = union(enum) {
     division,
     negation,
     ans,
+    exit,
 };
 
 const Self = @This();
@@ -23,12 +25,12 @@ operation: Operation,
 nodes: []Self,
 allocator: *Allocator,
 
-pub fn ans(allocator: *Allocator) !Self {
+pub fn zeroOperation(allocator: *Allocator, operation: Operation) !Self {
     const nodes = try allocator.alloc(Self, 0);
     errdefer nodes.deinit();
 
     return Self{
-        .operation = .ans,
+        .operation = operation,
         .nodes = nodes,
         .allocator = allocator,
     };
@@ -92,5 +94,6 @@ pub fn interpret(self: Self) anyerror!f64 {
         },
         .negation => return -(try self.nodes[0].interpret()),
         .ans => return calculator.ans,
+        .exit => return Error.Exit,
     }
 }

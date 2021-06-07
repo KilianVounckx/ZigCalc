@@ -9,6 +9,7 @@ pub const Error = error {
     InvalidSyntax,
     ExpectedNumber,
     ExpectedRightParenthesis,
+    ExpectedEol,
 };
 
 const Self = @This();
@@ -44,6 +45,14 @@ pub fn advance(self: *Self) void {
 pub fn parse(self: *Self, allocator: *Allocator) !?Node {
     if (self.current_token == null) {
         return null;
+    }
+
+    if (self.current_token.?.token_type == .exit) {
+        self.advance();
+        if (self.current_token != null) {
+            return Error.ExpectedEol;
+        }
+        return try Node.zeroOperation(allocator, .exit);
     }
 
     const result = try self.expression(allocator);
@@ -136,7 +145,7 @@ pub fn factor(self: *Self, allocator: *Allocator) anyerror!Node {
         },
         .ans => {
             self.advance();
-            return Node.ans(allocator);
+            return Node.zeroOperation(allocator, .ans);
         },
         else => return Error.ExpectedNumber,
     } else {

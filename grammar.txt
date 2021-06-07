@@ -1,4 +1,5 @@
 expression  : term ([PLUS | MINUS] term)*
+            | EXIT
 
 term        : factor ([ASTERISK | SLASH] factor)*
 

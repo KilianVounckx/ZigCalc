@@ -50,6 +50,7 @@ pub fn main() !void {
                 try stderr.print("Runtime error: {}\n", .{err});
                 continue;
             },
+            RuntimeError.Exit => return,
             else => return err,
         };
 
