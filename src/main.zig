@@ -5,6 +5,7 @@ const stderr = std.io.getStdErr().writer();
 
 const Lexer = @import("Lexer.zig");
 const Parser = @import("Parser.zig");
+const RuntimeError = @import("Node.zig").Error;
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -30,7 +31,8 @@ pub fn main() !void {
 
         var parser = Parser.init(tokens);
         var ast = parser.parse(&gpa.allocator) catch |err| switch (err) {
-            Parser.Error.ExpectedNumber, Parser.Error.ExpectedSomething, Parser.Error.InvalidSyntax, Parser.Error.ExpectedRightParenthesis => {
+            Parser.Error.ExpectedNumber, Parser.Error.ExpectedSomething,
+            Parser.Error.InvalidSyntax, Parser.Error.ExpectedRightParenthesis => {
                 try stderr.print("Parser error: {}\n", .{err});
                 continue;
             },
@@ -41,6 +43,14 @@ pub fn main() !void {
         };
         defer ast.deinit();
 
-        std.debug.print("test: {}\n", .{ast.operation});
+        const result = ast.interpret() catch |err| switch (err) {
+            RuntimeError.DivisionByZero => {
+                try stderr.print("Runtime error: {}\n", .{err});
+                continue;
+            },
+            else => return err,
+        };
+
+        try stdout.print("{d:.8}\n", .{result});
     }
 }

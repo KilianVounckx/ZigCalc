@@ -30,14 +30,15 @@ pub fn advance(self: *Self) void {
         else
             null
     else
-        0
-    ;
+        if (self.tokens.len > 0)
+            @as(?usize, 0)
+        else
+            null;
 
     self.current_token = if (self.current_index) |index|
         self.tokens[index]
     else
-        null
-    ;
+        null;
 }
 
 pub fn parse(self: *Self, allocator: *Allocator) !?Node {

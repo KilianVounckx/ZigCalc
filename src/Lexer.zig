@@ -29,14 +29,15 @@ pub fn advance(self: *Self) void {
         else
             null
     else
-        0
-    ;
+        if (self.text.len > 0)
+            @as(?usize, 0)
+        else
+            null;
 
     self.current_char = if (self.current_index) |index|
         self.text[index]
     else
-        null
-    ;
+        null;
 }
 
 pub fn tokenize(self: *Self, allocator: *Allocator) ![]Token {

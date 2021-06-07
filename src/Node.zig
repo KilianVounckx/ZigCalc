@@ -1,6 +1,10 @@
 const std = @import("std");
 const Allocator = std.mem.Allocator;
 
+pub const Error = error {
+    DivisionByZero,
+};
+
 const Operation = union(enum) {
     number: f64,
     addition,
@@ -59,18 +63,19 @@ pub fn deinit(self: *Self) void {
     self.allocator.free(self.nodes);
 }
 
-pub fn format(
-    self: Self,
-    comptime fmt: []const u8,
-    options: std.fmt.FormatOptions,
-    writer: anytype,
-) !void {
+pub fn interpret(self: Self) anyerror!f64 {
     switch (self.operation) {
-        .number => |value| try writer.print("{d}", .{value}),
-        .addition => try writer.print("({s}+{s})", .{self.nodes[0], self.nodes[1]}),
-        .subtraction => try writer.print("({s}-{s})", .{self.nodes[0], self.nodes[1]}),
-        .multiplication => try writer.print("({s}*{s})", .{self.nodes[0], self.nodes[1]}),
-        .division => try writer.print("({s}/{s})", .{self.nodes[0], self.nodes[1]}),
-        .negation => try writer.print("(-{s})", .{self.nodes[0]}),
+        .number => |value| return value,
+        .addition => return (try self.nodes[0].interpret()) + (try self.nodes[1].interpret()),
+        .subtraction => return (try self.nodes[0].interpret()) - (try self.nodes[1].interpret()),
+        .multiplication => return (try self.nodes[0].interpret()) * (try self.nodes[1].interpret()),
+        .division => {
+            const right = try self.nodes[1].interpret();
+            if (right == 0) {
+                return Error.DivisionByZero;
+            }
+            return (try self.nodes[0].interpret()) / right;
+        },
+        .negation => return -(try self.nodes[0].interpret()),
     }
 }
