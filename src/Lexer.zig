@@ -62,6 +62,10 @@ pub fn tokenize(self: *Self, allocator: *Allocator) ![]Token {
             try result.append(Token.init(.slash));
             self.advance();
         },
+        '^' => {
+            try result.append(Token.init(.circumflex));
+            self.advance();
+        },
         '(' => {
             try result.append(Token.init(.left_paren));
             self.advance();

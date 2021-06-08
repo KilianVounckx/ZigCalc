@@ -1,9 +1,13 @@
 expression  : term ([PLUS | MINUS] term)*
-            | EXIT
+            : EXIT
 
 term        : factor ([ASTERISK | SLASH] factor)*
 
-factor      : (MINUS)? factor
-            | LEFT_PAREN expression RIGHT_PAREN
-            | number
-            | ANS
+factor      : (PLUS|MINUS)* factor
+            : power
+
+power       : atom (CIRCUMFLEX factor)*
+
+atom        : NUMBER
+            : ANS
+            : LEFT_PAREN expression RIGHT_PAREN

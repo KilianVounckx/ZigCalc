@@ -1,10 +1,12 @@
 const std = @import("std");
+const math = std.math;
 const Allocator = std.mem.Allocator;
 
 const calculator = @import("main.zig");
 
 pub const Error = error {
     DivisionByZero,
+    ZeroToTheZero,
     Exit,
 };
 
@@ -15,6 +17,7 @@ const Operation = union(enum) {
     multiplication,
     division,
     negation,
+    power,
     ans,
     exit,
 };
@@ -91,6 +94,14 @@ pub fn interpret(self: Self) anyerror!f64 {
                 return Error.DivisionByZero;
             }
             return (try self.nodes[0].interpret()) / right;
+        },
+        .power => {
+            const left = try self.nodes[0].interpret();
+            const right = try self.nodes[1].interpret();
+            if (left == 0 and right == 0) {
+                return Error.ZeroToTheZero;
+            }
+            return math.pow(f64, left, right);
         },
         .negation => return -(try self.nodes[0].interpret()),
         .ans => return calculator.ans,

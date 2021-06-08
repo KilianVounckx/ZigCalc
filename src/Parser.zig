@@ -121,14 +121,45 @@ pub fn term(self: *Self, allocator: *Allocator) !Node {
 }
 
 pub fn factor(self: *Self, allocator: *Allocator) anyerror!Node {
-    if (self.current_token) |token| switch (token.token_type) {
+    while (self.current_token) |token| switch (token.token_type) {
+        .plus => {
+            self.advance();
+            return try self.factor(allocator);
+        },
         .minus => {
             self.advance();
             return Node.unaryOperation(allocator, .negation, try self.factor(allocator));
         },
+        else => break,
+    };
+    return try self.power(allocator);
+}
+
+pub fn power(self: *Self, allocator: *Allocator) anyerror!Node {
+    var result = try self.atom(allocator);
+    while (self.current_token) |token| switch (token.token_type) {
+        .circumflex => {
+            self.advance();
+            result = try Node.binaryOperation(allocator, .power, result, try self.factor(allocator));
+        },
+        else => break,
+    };
+    return result;
+}
+
+pub fn atom(self: *Self, allocator: *Allocator) anyerror!Node {
+    if (self.current_token) |token| switch (token.token_type) {
+        .number => {
+            self.advance();
+            return try Node.number(allocator, token.value.?);
+        },
+        .ans => {
+            self.advance();
+            return try Node.zeroOperation(allocator, .ans);
+        },
         .left_paren => {
             self.advance();
-            var result = try self.expression(allocator);
+            const result = try self.expression(allocator);
             if (self.current_token) |new_token| switch (new_token.token_type) {
                 .right_paren => {
                     self.advance();
@@ -139,15 +170,7 @@ pub fn factor(self: *Self, allocator: *Allocator) anyerror!Node {
                 return Error.ExpectedRightParenthesis;
             }
         },
-        .number => {
-            self.advance();
-            return Node.number(allocator, token.value.?);
-        },
-        .ans => {
-            self.advance();
-            return Node.zeroOperation(allocator, .ans);
-        },
-        else => return Error.ExpectedNumber,
+        else => return Error.InvalidSyntax,
     } else {
         return Error.ExpectedSomething;
     }

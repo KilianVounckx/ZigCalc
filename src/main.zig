@@ -46,7 +46,7 @@ pub fn main() !void {
         defer ast.deinit();
 
         const result = ast.interpret() catch |err| switch (err) {
-            RuntimeError.DivisionByZero => {
+            RuntimeError.DivisionByZero, RuntimeError.ZeroToTheZero => {
                 try stderr.print("Runtime error: {}\n", .{err});
                 continue;
             },
