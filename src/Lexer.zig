@@ -77,6 +77,7 @@ pub fn tokenize(self: *Self, allocator: *Allocator) ![]Token {
         '0'...'9' => try result.append(try self.tokenizeNumber(allocator)),
         'a' => try result.append(try self.tokenizeAns(allocator)),
         'e' => try result.append(try self.tokenizeExit(allocator)),
+        'h' => try result.append(try self.tokenizeHelp(allocator)),
         else => return Error.InvalidCharacter,
     };
 
@@ -147,4 +148,25 @@ pub fn tokenizeExit(self: *Self, allocator: *Allocator) !Token {
     self.advance();
 
     return Token.init(.exit);
+}
+
+pub fn tokenizeHelp(self: *Self, allocator: *Allocator) !Token {
+    self.advance();
+    if (self.current_char) |char| switch (char) {
+        'e' => {},
+        else => return Error.InvalidCharacter,
+    };
+    self.advance();
+    if (self.current_char) |char| switch (char) {
+        'l' => {},
+        else => return Error.InvalidCharacter,
+    };
+    self.advance();
+    if (self.current_char) |char| switch (char) {
+        'p' => {},
+        else => return Error.InvalidCharacter,
+    };
+    self.advance();
+
+    return Token.init(.help);
 }

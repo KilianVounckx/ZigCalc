@@ -8,6 +8,7 @@ pub const Error = error {
     DivisionByZero,
     ZeroToTheZero,
     Exit,
+    Help,
 };
 
 const Operation = union(enum) {
@@ -20,6 +21,7 @@ const Operation = union(enum) {
     power,
     ans,
     exit,
+    help,
 };
 
 const Self = @This();
@@ -106,5 +108,6 @@ pub fn interpret(self: Self) anyerror!f64 {
         .negation => return -(try self.nodes[0].interpret()),
         .ans => return calculator.ans,
         .exit => return Error.Exit,
+        .help => return Error.Help,
     }
 }

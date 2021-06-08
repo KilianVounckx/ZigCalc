@@ -6,6 +6,7 @@ const stderr = std.io.getStdErr().writer();
 const Lexer = @import("Lexer.zig");
 const Parser = @import("Parser.zig");
 const RuntimeError = @import("Node.zig").Error;
+const help = @import("help.zig");
 
 pub var ans: f64 = 0;
 
@@ -13,9 +14,11 @@ pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     defer _ = gpa.deinit();
 
+    try help.printStart(stdout);
+
     var buffer: [128]u8 = undefined;
     while (true) {
-        try stdout.print("calc> ", .{});
+        try stdout.print("zigcalc> ", .{});
         const line = (stdin.readUntilDelimiterOrEof(&buffer, '\n') catch |err| {
             try stderr.print("Input too long.\n", .{});
             continue;
@@ -51,6 +54,10 @@ pub fn main() !void {
                 continue;
             },
             RuntimeError.Exit => return,
+            RuntimeError.Help => {
+                try help.printHelp(stdout);
+                continue;
+            },
             else => return err,
         };
 

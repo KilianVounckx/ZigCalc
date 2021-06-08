@@ -47,12 +47,22 @@ pub fn parse(self: *Self, allocator: *Allocator) !?Node {
         return null;
     }
 
-    if (self.current_token.?.token_type == .exit) {
-        self.advance();
-        if (self.current_token != null) {
-            return Error.ExpectedEol;
-        }
-        return try Node.zeroOperation(allocator, .exit);
+    switch (self.current_token.?.token_type) {
+        .exit => {
+            self.advance();
+            if (self.current_token != null) {
+                return Error.ExpectedEol;
+            }
+            return try Node.zeroOperation(allocator, .exit);
+        },
+        .help => {
+            self.advance();
+            if (self.current_token != null) {
+                return Error.ExpectedEol;
+            }
+            return try Node.zeroOperation(allocator, .help);
+        },
+        else => {},
     }
 
     const result = try self.expression(allocator);
