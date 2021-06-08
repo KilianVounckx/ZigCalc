@@ -10,7 +10,7 @@ pub fn printStart(
         \\
         \\
         \\
-        , .{});
+    , .{});
 }
 
 pub fn printHelp(
@@ -26,5 +26,5 @@ pub fn printHelp(
         \\
         \\
         \\
-        , .{});
+    , .{});
 }

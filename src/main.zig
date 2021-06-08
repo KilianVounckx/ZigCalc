@@ -36,8 +36,7 @@ pub fn main() !void {
 
         var parser = Parser.init(tokens);
         var ast = parser.parse(&gpa.allocator) catch |err| switch (err) {
-            Parser.Error.ExpectedNumber, Parser.Error.ExpectedSomething,
-            Parser.Error.InvalidSyntax, Parser.Error.ExpectedRightParenthesis => {
+            Parser.Error.ExpectedNumber, Parser.Error.ExpectedSomething, Parser.Error.InvalidSyntax, Parser.Error.ExpectedRightParenthesis => {
                 try stderr.print("Parser error: {}\n", .{err});
                 continue;
             },

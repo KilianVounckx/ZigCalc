@@ -4,7 +4,7 @@ const Allocator = std.mem.Allocator;
 
 const calculator = @import("main.zig");
 
-pub const Error = error {
+pub const Error = error{
     DivisionByZero,
     ZeroToTheZero,
     Exit,
@@ -46,7 +46,7 @@ pub fn number(allocator: *Allocator, value: f64) !Self {
     errdefer nodes.deinit();
 
     return Self{
-        .operation = .{.number = value},
+        .operation = .{ .number = value },
         .nodes = nodes,
         .allocator = allocator,
     };

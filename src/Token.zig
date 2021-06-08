@@ -41,11 +41,11 @@ token_type: TokenType = .number,
 value: ?f64 = null,
 
 pub fn init(token_type: TokenType) Self {
-    return .{.token_type = token_type};
+    return .{ .token_type = token_type };
 }
 
 pub fn number(value: f64) Self {
-    return .{.value = value};
+    return .{ .value = value };
 }
 
 pub fn format(

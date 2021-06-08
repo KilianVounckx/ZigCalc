@@ -4,7 +4,7 @@ const Allocator = std.mem.Allocator;
 const Node = @import("Node.zig");
 const Token = @import("Token.zig");
 
-pub const Error = error {
+pub const Error = error{
     ExpectedSomething,
     InvalidSyntax,
     ExpectedNumber,
@@ -19,7 +19,7 @@ current_index: ?usize = null,
 current_token: ?Token = null,
 
 pub fn init(tokens: []Token) Self {
-    var result = Self{.tokens = tokens};
+    var result = Self{ .tokens = tokens };
     result.advance();
     return result;
 }
@@ -30,11 +30,10 @@ pub fn advance(self: *Self) void {
             index + 1
         else
             null
+    else if (self.tokens.len > 0)
+        @as(?usize, 0)
     else
-        if (self.tokens.len > 0)
-            @as(?usize, 0)
-        else
-            null;
+        null;
 
     self.current_token = if (self.current_index) |index|
         self.tokens[index]

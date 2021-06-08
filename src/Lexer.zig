@@ -4,7 +4,7 @@ const ArrayList = std.ArrayList;
 
 const Token = @import("Token.zig");
 
-pub const Error = error {
+pub const Error = error{
     InvalidCharacter,
     TooManyPoints,
     UnexpectedPoint,
@@ -17,7 +17,7 @@ current_index: ?usize = null,
 current_char: ?u8 = null,
 
 pub fn init(text: []const u8) Self {
-    var result = Self{.text = text};
+    var result = Self{ .text = text };
     result.advance();
     return result;
 }
@@ -28,11 +28,10 @@ pub fn advance(self: *Self) void {
             index + 1
         else
             null
+    else if (self.text.len > 0)
+        @as(?usize, 0)
     else
-        if (self.text.len > 0)
-            @as(?usize, 0)
-        else
-            null;
+        null;
 
     self.current_char = if (self.current_index) |index|
         self.text[index]
@@ -91,7 +90,7 @@ pub fn tokenizeNumber(self: *Self, allocator: *Allocator) !Token {
     var has_point = false;
 
     while (self.current_char) |char| switch (char) {
-        '0' ... '9' => {
+        '0'...'9' => {
             try number_string.append(char);
             self.advance();
         },
@@ -105,7 +104,7 @@ pub fn tokenizeNumber(self: *Self, allocator: *Allocator) !Token {
         else => break,
     };
 
-    if (number_string.items[number_string.items.len-1] == '.') {
+    if (number_string.items[number_string.items.len - 1] == '.') {
         return Error.UnexpectedPoint;
     }
 
